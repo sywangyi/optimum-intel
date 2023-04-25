@@ -13,6 +13,7 @@ from optimum.exporters.tasks import TasksManager
 
 from ..utils.constant import _TASK_ALIASES
 
+from ..generation.tracing import jit_trace
 from ..generation.modeling import TSModelForCausalLM
 
 
@@ -108,7 +109,17 @@ class inference_mode:
                                 if self._model.tokenizer is not None and self._jit:
                                     try:
                                         if self._model.task == "text-generation":
-                                            model = TSModelForCausalLM.export_model(model=model, task=self._model.task)
+                                            jit_model = jit_trace(
+                                                model=model,
+                                                task=self._model.task,
+                                                config=self._original.config,
+                                                use_cache=self._original.config.use_cache,
+                                            )
+                                            model = TSModelForCausalLM(
+                                                model=jit_model,
+                                                config=self._original.config,
+                                                use_cache=self._original.config.use_cache,
+                                            )
                                         else:
                                             jit_inputs = []
                                             dummy_input = self._model.tokenizer("")
