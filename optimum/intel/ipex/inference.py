@@ -7,8 +7,8 @@ from transformers import add_start_docstrings
 from transformers.pipelines import Pipeline
 from transformers.utils import is_ipex_available
 
-from ..generation.tracing import jit_trace
 from ..generation.modeling import TSModelForCausalLM
+from ..generation.tracing import jit_trace
 
 
 logger = logging.getLogger(__name__)
